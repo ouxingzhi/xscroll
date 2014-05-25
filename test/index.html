@@ -9,7 +9,12 @@
 	</style>
 	<script type="text/javascript" src="../src/xscroll.js"></script>
 	<script>
-
+		var div = document.createElement('div');
+		div.innerHTML = '<div>AAAA</div>';
+		var d = div.childNodes[0];
+		div.removeChild(d);
+		div.innerHTML = '';
+		console.log(d.innerHTML);
 	</script>
 </head>
 <body>
