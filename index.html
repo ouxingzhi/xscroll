@@ -18,7 +18,7 @@
       <li>图片列表</li>
     </ul>
     <div class="scroll-box">
-      <div>
+      <div class="cont">
         <script>include('./data/content1-1.html')</script>
       </div>
       <div>
@@ -82,9 +82,11 @@
       switchTab(0);
       //四个大框架的滚动
       subbox.forEach(function(li){ 
-        new xScroll({
-          el:li
-        });
+        if(li.className === 'cont'){
+          new xScroll({
+            el:li
+          });
+        }
       });
       contents.forEach(function(li){ 
         li.xScroll = new xScroll({
