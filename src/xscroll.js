@@ -1,5 +1,5 @@
 /**
- * 针对modile端的小型滚动条框架
+ * 这是个针对modile端的小型滚动条框架
  * 兼容 IE9+,chrome,firefox,safari及所有现代浏览器
  * @author ouxingzhi@vip.qq.com
  * @createDate 2014/06/01
