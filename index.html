@@ -18,39 +18,10 @@
       <li>图片列表</li>
     </ul>
     <div class="scroll-box">
-      <div class="cont">
-        <script>include('./data/content1-1.html')</script>
-      </div>
-      <div>
-        <div class="content"  style="width:50%;height:100%;float:left">
-            <script>include('./data/content2-1.html')</script>
-        </div>
-        <div class="content"  style="width:50%;height:100%;float:right">
-            <script>include('./data/content2-2.html')</script>
-        </div>
-      </div>
-      <div>
-        <div class="content"  style="width:50%;height:50%;float:left">
-            <script>include('./data/content3-1.html')</script>
-        </div>
-        <div class="content"  style="width:50%;height:50%;float:right">
-            <script>include('./data/content3-2.html')</script>
-        </div>
-        <div class="content"  style="width:50%;height:50%;float:left">
-            <script>include('./data/content3-3.html')</script>
-        </div>
-        <div class="content"  style="width:50%;height:50%;float:right">
-            <script>include('./data/content3-4.html')</script>
-        </div>
-      </div>
-      <div>
-        <div id="arclist" class="content"  style="width:30%;height:100%;float:left">
-            <script>include('./data/content4-1.html')</script>
-        </div>
-        <div id="arcbox" class="content"  style="width:70%;height:100%;float:right">
-            <script>include('./data/content4-2.html')</script>
-        </div>
-      </div>
+      <div class="article"></div>
+      <div class="articlelist"></div>
+      <div class="imagetable"></div>
+      <div class="imagelist"></div>
     </div>
     <script src="src/xscroll.js"></script>
     <script>
@@ -68,12 +39,124 @@
           scrollbox.style.height = (window.innerHeight - menubox.offsetHeight) + 'px';
       };
       window.onresize();
+
+      function isEmpty(el){
+          var el = el.firstChild;
+          do{
+              if(!el) return true;
+              if(el && el.nodeType === 1) return false;
+          }while(el = el.nextSibling);
+          return true;
+      }
+
       function switchTab(index){
           menus.forEach(function(li){ li.className = ''});
           menus[index].className = 'cur';
           subbox.forEach(function(li){ li.style.display = 'none'});
-          subbox[index].style.display = 'block';
+
+          var sub = subbox[index];
+          sub.style.display = 'block';
+          switch(sub.className){
+              case 'article':
+                  if(isEmpty(sub)){
+                      loadArticle(sub);
+                  }
+                  break;
+              case 'articlelist':
+                  if(isEmpty(sub)){
+                      loadArticlelist(sub);
+                  }
+                  break;
+              case 'imagetable':
+                  if(isEmpty(sub)){
+                      loadImagetable(sub);
+                  }
+                  break;
+              case 'imagelist':
+                  if(isEmpty(sub)){
+                      loadImagelist(sub);
+                  }
+          }
       }
+
+
+      function loadArticle(box){
+          loadHtml("./data/content1-1.html",box,function(){
+              new xScroll({
+                  el:box
+              });
+          });
+      }
+
+      function loadArticlelist(box){
+          var els = C([
+              '<div class="content"  style="width:50%;height:100%;float:left">',
+              '</div>',
+              '<div class="content"  style="width:50%;height:100%;float:right">',
+              '</div>'
+          ].join(''));
+          for(var i=0,len=els.length;i<len;i++){
+              box.appendChild(els[i]);
+              els[i].innerHTML = '加载中...';
+              loadHtml("./data/content2-"+(i+1)+".html",els[i],function(el){
+                  return function(){
+                      new xScroll({
+                          el:el
+                      });
+                  }
+              }(els[i]));
+          }
+      }
+
+      function loadImagetable(box){
+          var els = C([
+              '<div class="content"  style="width:50%;height:50%;float:left"></div>',
+              '<div class="content"  style="width:50%;height:50%;float:right"></div>',
+              '<div class="content"  style="width:50%;height:50%;float:left"></div>',
+              '<div class="content"  style="width:50%;height:50%;float:right"></div>'
+          ].join(''));
+          for(var i=0,len=els.length;i<len;i++){
+              box.appendChild(els[i]);
+              els[i].innerHTML = '加载中...';
+              loadHtml("./data/content3-"+(i+1)+".html",els[i],function(el){
+                  return function(){
+                      new xScroll({
+                          el:el
+                      });
+                  }
+              }(els[i]));
+          }
+      }
+
+      function loadImagelist(box){
+          var els = C([
+              '<div id="arclist" class="content"  style="width:30%;height:100%;float:left"></div>',
+              '<div id="arcbox" class="content"  style="width:70%;height:100%;float:right"></div>'
+          ].join(''));
+          var arclist = els[0],
+              arcbox = els[1];
+          box.appendChild(arclist);
+          box.appendChild(arcbox);
+
+          loadHtml("./data/content4-1.html",arclist,function(){
+              arclist.xScroll = new xScroll({
+                  el:arclist
+              });
+              arclist.addEventListener('click',function(e){
+                  if(e.target.nodeName === 'LI'){
+                      loadHtml(e.target.getAttribute('data-url'),arcbox.xScroll.getContent());
+                  }
+              },false);
+              setTimeout(function(){
+                var target = $('#arclist li')[0];
+                loadHtml(target.getAttribute('data-url'),arcbox.xScroll.getContent());
+              },100);
+          });
+          arcbox.xScroll = new xScroll({
+              el:arcbox
+          });
+      }
+
       menus.forEach(function(v,i){
         v.addEventListener('click',function(){
             switchTab(i);
@@ -82,7 +165,7 @@
       switchTab(0);
       //四个大框架的滚动
       subbox.forEach(function(li){ 
-        if(li.className === 'cont'){
+        if(li.className === 'article'){
           new xScroll({
             el:li
           });
@@ -94,17 +177,7 @@
         });
       });
 
-      var arclist = $('#arclist')[0],
-          arcbox = $('#arcbox')[0];
-      arclist.addEventListener('click',function(e){
-          if(e.target.nodeName === 'LI'){
-              loadHtml(e.target.getAttribute('data-url'),arcbox.xScroll.getContent());
-          }
-      },false);
-      setTimeout(function(){
-        var target = $('#arclist li')[0];
-        loadHtml(target.getAttribute('data-url'),arcbox.xScroll.getContent());
-      },1000);
+      
       
     </script>
   </body>

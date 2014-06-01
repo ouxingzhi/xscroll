@@ -33,10 +33,26 @@ function include(url){
 	});
 }
 
-function loadHtml(url,box){
+function loadHtml(url,box,callback){
 	load(url,function(html){
 		box.innerHTML = html;
+		callback && callback();
 	},function(){
 		box.innerHTML = '<p style="text-align:center;margin-top:10px">下载失败</p>';
+		callback && callback();
 	});
 }
+
+var C = function(div){
+	return function(html){
+		div.innerHTML = html;
+		var childs = div.childNodes,result = [];
+		for(var i=0,len=childs.length;i<len;i++){
+			result.push(childs[i]);
+		}
+		for(var i=childs.length-1;i>-1;i--){
+			div.removeChild(childs[i]);
+		}
+		return result;
+	};
+}(document.createElement('div'));
