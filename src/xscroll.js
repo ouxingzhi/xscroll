@@ -329,6 +329,7 @@ void function(window,document,undefined){
 	}
 	xScroll.SLIDE_STATE_STOP = 0;
 	xScroll.SLIDE_STATE_RUNNING = 1;
+	xScroll.SLIDE_STATE_SETSTOP = 2;
 
 	xScroll.prototype = {
 		constructor:xScroll,
@@ -477,7 +478,7 @@ void function(window,document,undefined){
 			};
 		},
 		onTouchStart:function(e){
-			preventDefault(e);
+			//preventDefault(e);
 			stopPropagation(e)
 			this.setStartPos(e);
 			var pos = this.getPageTouchPos(e);
@@ -496,7 +497,7 @@ void function(window,document,undefined){
 			
 		},
 		onTouchEnd:function(e){
-			preventDefault(e);
+			//preventDefault(e);
 			stopPropagation(e)
 			var pos = this.getPageTouchPos(e);
 			var speed = this.acceleration.end(pos.x,pos.y);
@@ -507,17 +508,22 @@ void function(window,document,undefined){
 			this.slideLoop(100,speed.x,speed.y);
 		},
 		slideLoop:function(num,x,y){
+			if(this.slide_state ===  xScroll.SLIDE_STATE_SETSTOP){
+				this.slide_state = xScroll.SLIDE_STATE_STOP;
+				return;
+			}
 			if(this.slide_state === xScroll.SLIDE_STATE_STOP || !num || !x && !y){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
-				this._onScrollEnd();
 				this.onScrollEnd();
+				setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
 			}
+			//到头了
 			var spos = getScrollInfo(this.container);
 			if(spos.left === this.lastLeft && spos.top === this.lastTop){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
 				this.onScrollEnd();
-				setTimeout(this._onScrollEnd.bind(this),200);
+				setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
 			}
 			var xm = spos.left - x * 0.03,
@@ -531,7 +537,7 @@ void function(window,document,undefined){
 			}.bind(this));
 		},
 		stopSlideLoop:function(){
-			this.slide_state = xScroll.SLIDE_STATE_STOP;
+			this.slide_state = xScroll.SLIDE_STATE_SETSTOP;
 		},
 		calcSlidePos:function(xm,ym){
 			this.setScroll(xm,ym)
@@ -553,8 +559,10 @@ void function(window,document,undefined){
 			this.onScrollMove();
 		},
 		_onScrollEnd:function(){
-			css(this.xScrollBar,'display','none');
-			css(this.yScrollBar,'display','none');
+			if(this.slide_state === xScroll.SLIDE_STATE_STOP){
+				css(this.xScrollBar,'display','none');
+				css(this.yScrollBar,'display','none');
+			}
 		},
 		calcScroll:function(){
 			var sinfo = getScrollInfo(this.container),
@@ -606,6 +614,7 @@ void function(window,document,undefined){
 			for(i=0,len=tmplist.length;i<len;i++){
 				this.container.appendChild(tmplist[i]);
 			}
+
 			this.el.appendChild(this.container);
 			this.el.appendChild(this.xScrollBar);
 			this.el.appendChild(this.yScrollBar);
@@ -613,6 +622,9 @@ void function(window,document,undefined){
 			if(!elPosition || elPosition === 'static'){
 				css(this.el,'position','relative');
 			}
+		},
+		getContent:function(){
+			return this.container;
 		}
 	};
 
