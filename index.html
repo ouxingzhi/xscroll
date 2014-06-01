@@ -12,14 +12,14 @@
   </head>
   <body>
     <ul class="menu-box">
-      <li class="cur">小说</li>
-      <li>目录</li>
+      <li class="cur">目录</li>
+      <li>小说</li>
       <li>图片格子</li>
       <li>图片列表</li>
     </ul>
     <div class="scroll-box">
-      <div class="article"></div>
       <div class="articlelist"></div>
+      <div class="article"></div>
       <div class="imagetable"></div>
       <div class="imagelist"></div>
     </div>
@@ -81,6 +81,7 @@
 
 
       function loadArticle(box){
+          box.innerHTML = '<p style="padding:20px;text-align:center">加载中...</p>';
           loadHtml("./data/content1-1.html",box,function(){
               new xScroll({
                   el:box
@@ -97,7 +98,7 @@
           ].join(''));
           for(var i=0,len=els.length;i<len;i++){
               box.appendChild(els[i]);
-              els[i].innerHTML = '加载中...';
+              els[i].innerHTML = '<p style="padding:20px;text-align:center">加载中...</p>';
               loadHtml("./data/content2-"+(i+1)+".html",els[i],function(el){
                   return function(){
                       new xScroll({
@@ -117,7 +118,7 @@
           ].join(''));
           for(var i=0,len=els.length;i<len;i++){
               box.appendChild(els[i]);
-              els[i].innerHTML = '加载中...';
+              els[i].innerHTML = '<p style="padding:20px;text-align:center">加载中...</p>';
               loadHtml("./data/content3-"+(i+1)+".html",els[i],function(el){
                   return function(){
                       new xScroll({
@@ -163,21 +164,6 @@
         });
       })
       switchTab(0);
-      //四个大框架的滚动
-      subbox.forEach(function(li){ 
-        if(li.className === 'article'){
-          new xScroll({
-            el:li
-          });
-        }
-      });
-      contents.forEach(function(li){ 
-        li.xScroll = new xScroll({
-          el:li
-        });
-      });
-
-      
       
     </script>
   </body>
