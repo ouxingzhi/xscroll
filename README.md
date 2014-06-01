@@ -10,14 +10,14 @@ xScroll 支持内容动态变化，并且支持多层嵌套。
 示例：
 html:
 <code>
-		<div id="scroll">
-			内容
-		</div>
+	<div id="scroll">
+		内容
+	</div>
 </code>
 javascript:
 <code>
-		new xScroll({
-			el:'#scroll'
-		});
+	new xScroll({
+	el:'#scroll'
+	});
 </code>
 demo:
