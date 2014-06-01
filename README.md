@@ -23,4 +23,4 @@ new xScroll({
 	el:'#scroll'
 });
 ```
-demo:
+demo:http://ouxingzhi.github.io/xscroll
