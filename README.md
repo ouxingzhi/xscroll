@@ -6,6 +6,9 @@ xScroll framework 0.1.0
 版本: 0.1.0    
    
 xScroll 支持内容动态变化，并且支持多层嵌套。
+
+注意事项：   
+容器本身需要明确尺寸，也能js动态调整，但不能不设置高宽，且设置百分比也行。   
    
 示例：   
 html:    
@@ -20,4 +23,4 @@ new xScroll({
 	el:'#scroll'
 });
 ```
-demo:
+demo:http://ouxingzhi.github.io/xscroll
