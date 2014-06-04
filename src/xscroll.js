@@ -526,14 +526,15 @@ void function(window,document,undefined){
 				setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
 			}
-			var xm = spos.left - x * 0.03,
-				ym = spos.top - y * 0.03;
+			var ratio = 0.03 * Math.pow((num / 100),4);
+			var xm = spos.left - x * ratio ,
+				ym = spos.top - y * ratio;
 
 			this.lastLeft = spos.left;
 			this.lastTop = spos.top;
 			this.calcSlidePos(xm,ym);
 			requestAnimationFrame(function(){
-				this.slideLoop(--num,parseInt(x*0.9),parseInt(y*0.9))
+				this.slideLoop(--num,x,y)
 			}.bind(this));
 		},
 		stopSlideLoop:function(){
