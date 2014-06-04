@@ -514,8 +514,6 @@ void function(window,document,undefined){
 		slideLoop:function(num,den,threadid,x,y){
 
 			if(threadid !== this.curThreadId){
-				this.slide_state = xScroll.SLIDE_STATE_STOP;
-				console.log('exit')
 				return;
 			}
 			if(this.slide_state === xScroll.SLIDE_STATE_STOP || !num || !x && !y){
