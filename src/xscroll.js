@@ -518,7 +518,6 @@ void function(window,document,undefined){
 			}
 			if(!num || !x && !y){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
-				this.stopSlideLoop();
 				this.onScrollEnd();
 				this.endtimeer = setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
@@ -527,7 +526,6 @@ void function(window,document,undefined){
 			var spos = getScrollInfo(this.container);
 			if(spos.left === this.lastLeft && spos.top === this.lastTop){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
-				this.stopSlideLoop();
 				this.onScrollEnd();
 				this.endtimeer = setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
