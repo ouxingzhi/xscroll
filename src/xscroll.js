@@ -331,58 +331,10 @@ void function(window,document,undefined){
 	}
 	xScroll.SLIDE_STATE_STOP = 0;
 	xScroll.SLIDE_STATE_RUNNING = 1;
-	xScroll.SLIDE_STATE_SETSTOP = 2;
 
 	xScroll.prototype = {
 		constructor:xScroll,
-		//设置
-		/*on:function(type,data,fn,unique){
-			if(!(data instanceof Array)){
-				fn = data;
-				unique = fn;
-				data = null;
-			}
-			if(!(fn instanceof Function)) fn = function(){};
-			var events = this.events[type] = this.events[type] || [];
-			if(unique){
-				for(var i=events.length-1;i>-1;i--){
-					if(fn === events[i].fn) events.splice(i,1);
-				}
-			}
-			events.push({
-				data:data,
-				fn:fn
-			});
-			return this;
-		},
-		off:function(type,fn){
-			if(!type) return this;
-			var events;
-			if(fn){
-				var events = this.events[type];
-				if(!events) return this;
-				for(var i=events.length-1;i>-1;i--){
-					if(fn === events[i].fn) events.splice(i,1);
-				}
-			}else{
-				this.events[type] = null;
-			}
-			return this;
-		},
-		trigger:function(type,data){
-			var events = this.events[type],
-				self = this;
-			if(!events) return this;
-			events.forEach(function(o){
-				var args = [];
-				if(o.fn instanceof Function){
-					o.data && args.push(o.data);
-					data && args.push(data);
-					o.fn.apply(self,args);
-				}
-			});
-			return this;
-		},*/
+
 		setOption:function(ops){
 			if(ops.el){
 				if(typeof ops.el === 'string'){
@@ -507,16 +459,16 @@ void function(window,document,undefined){
 		},
 		startSlide:function(speed){
 			this.slide_state = xScroll.SLIDE_STATE_RUNNING;
-			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.04);
+			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.03);
 			console.log(len);
 			this.slideLoop(60+len,60+len,this.curThreadId,speed.x,speed.y);
 		},
 		slideLoop:function(num,den,threadid,x,y){
-
+			clearTimeout(this.endtimeer);
 			if(threadid !== this.curThreadId){
 				return;
 			}
-			if(this.slide_state === xScroll.SLIDE_STATE_STOP || !num || !x && !y){
+			if(!num || !x && !y){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
 				this.onScrollEnd();
 				this.endtimeer = setTimeout(this._onScrollEnd.bind(this),400);
