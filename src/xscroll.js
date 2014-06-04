@@ -505,9 +505,11 @@ void function(window,document,undefined){
 		},
 		startSlide:function(speed){
 			this.slide_state = xScroll.SLIDE_STATE_RUNNING;
-			this.slideLoop(100,speed.x,speed.y);
+			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.04);
+			console.log(len);
+			this.slideLoop(100+len,100+len,speed.x,speed.y);
 		},
-		slideLoop:function(num,x,y){
+		slideLoop:function(num,den,x,y){
 			if(this.slide_state ===  xScroll.SLIDE_STATE_SETSTOP){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
 				return;
@@ -515,7 +517,7 @@ void function(window,document,undefined){
 			if(this.slide_state === xScroll.SLIDE_STATE_STOP || !num || !x && !y){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
 				this.onScrollEnd();
-				setTimeout(this._onScrollEnd.bind(this),400);
+				this.endtimeer = setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
 			}
 			//到头了
@@ -523,10 +525,10 @@ void function(window,document,undefined){
 			if(spos.left === this.lastLeft && spos.top === this.lastTop){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
 				this.onScrollEnd();
-				setTimeout(this._onScrollEnd.bind(this),400);
+				this.endtimeer = setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
 			}
-			var ratio = 0.03 * Math.pow((num / 100),4);
+			var ratio = 0.03 * Math.pow((num / den),3);
 			var xm = spos.left - x * ratio ,
 				ym = spos.top - y * ratio;
 
@@ -534,7 +536,7 @@ void function(window,document,undefined){
 			this.lastTop = spos.top;
 			this.calcSlidePos(xm,ym);
 			requestAnimationFrame(function(){
-				this.slideLoop(--num,x,y)
+				this.slideLoop(--num,den,x,y)
 			}.bind(this));
 		},
 		stopSlideLoop:function(){
