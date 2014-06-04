@@ -460,7 +460,6 @@ void function(window,document,undefined){
 		startSlide:function(speed){
 			this.slide_state = xScroll.SLIDE_STATE_RUNNING;
 			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.03);
-			console.log(len);
 			this.slideLoop(60+len,60+len,this.curThreadId,speed.x,speed.y);
 		},
 		slideLoop:function(num,den,threadid,x,y){
