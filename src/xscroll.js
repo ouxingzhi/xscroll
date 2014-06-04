@@ -501,13 +501,13 @@ void function(window,document,undefined){
 			stopPropagation(e)
 			var pos = this.getPageTouchPos(e);
 			var speed = this.acceleration.end(pos.x,pos.y);
-			if(speed.y) this.startSlide(speed);
+			if(speed.y || speed.x) this.startSlide(speed);
 		},
 		startSlide:function(speed){
 			this.slide_state = xScroll.SLIDE_STATE_RUNNING;
 			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.04);
 			console.log(len);
-			this.slideLoop(100+len,100+len,speed.x,speed.y);
+			this.slideLoop(60+len,60+len,speed.x,speed.y);
 		},
 		slideLoop:function(num,den,x,y){
 			if(this.slide_state ===  xScroll.SLIDE_STATE_SETSTOP){
