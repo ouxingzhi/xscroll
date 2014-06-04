@@ -507,17 +507,18 @@ void function(window,document,undefined){
 		},
 		startSlide:function(speed){
 			this.slide_state = xScroll.SLIDE_STATE_RUNNING;
-			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.04);
+			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.03);
 			console.log(len);
 			this.slideLoop(60+len,60+len,this.curThreadId,speed.x,speed.y);
 		},
 		slideLoop:function(num,den,threadid,x,y){
-
+			clearTimeout(this.endtimeer);
 			if(threadid !== this.curThreadId){
 				return;
 			}
-			if(this.slide_state === xScroll.SLIDE_STATE_STOP || !num || !x && !y){
+			if(!num || !x && !y){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
+				this.stopSlideLoop();
 				this.onScrollEnd();
 				this.endtimeer = setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
@@ -526,6 +527,7 @@ void function(window,document,undefined){
 			var spos = getScrollInfo(this.container);
 			if(spos.left === this.lastLeft && spos.top === this.lastTop){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
+				this.stopSlideLoop();
 				this.onScrollEnd();
 				this.endtimeer = setTimeout(this._onScrollEnd.bind(this),400);
 				return ;
