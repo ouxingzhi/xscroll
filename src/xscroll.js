@@ -322,6 +322,8 @@ void function(window,document,undefined){
 				this.isLeftBtnDown = false;
 			}
 		}.bind(this);
+		//滚动的线程id
+		this.curThreadId = 0;
 
 		this.events = {};
 		this.setOption(ops);
@@ -501,17 +503,19 @@ void function(window,document,undefined){
 			stopPropagation(e)
 			var pos = this.getPageTouchPos(e);
 			var speed = this.acceleration.end(pos.x,pos.y);
-			if(speed.y) this.startSlide(speed);
+			if(speed.y || speed.x) this.startSlide(speed);
 		},
 		startSlide:function(speed){
 			this.slide_state = xScroll.SLIDE_STATE_RUNNING;
 			var len = parseInt(Math.sqrt(Math.pow(speed.x,2)+Math.pow(speed.y,2))*0.04);
 			console.log(len);
-			this.slideLoop(100+len,100+len,speed.x,speed.y);
+			this.slideLoop(60+len,60+len,this.curThreadId,speed.x,speed.y);
 		},
-		slideLoop:function(num,den,x,y){
-			if(this.slide_state ===  xScroll.SLIDE_STATE_SETSTOP){
+		slideLoop:function(num,den,threadid,x,y){
+
+			if(threadid !== this.curThreadId){
 				this.slide_state = xScroll.SLIDE_STATE_STOP;
+				console.log('exit')
 				return;
 			}
 			if(this.slide_state === xScroll.SLIDE_STATE_STOP || !num || !x && !y){
@@ -536,11 +540,11 @@ void function(window,document,undefined){
 			this.lastTop = spos.top;
 			this.calcSlidePos(xm,ym);
 			requestAnimationFrame(function(){
-				this.slideLoop(--num,den,x,y)
+				this.slideLoop(--num,den,threadid,x,y)
 			}.bind(this));
 		},
 		stopSlideLoop:function(){
-			this.slide_state = xScroll.SLIDE_STATE_SETSTOP;
+			this.curThreadId++;
 		},
 		calcSlidePos:function(xm,ym){
 			this.setScroll(xm,ym)
