@@ -12,7 +12,14 @@ void function(window,document,undefined){
 		slice = ap.slice,
 		push = ap.push,
 		regSelector = /^#([a-z][\w-]+)|\.([a-z][\w-]+)|([a-z]+)/i,
-		regTag = /^[a-z]+$/i;
+		regTag = /^[a-z]+$/i,
+		isIE = !!document.attachEvent;
+	Function.prototype.bind = Function.prototype.bind || function(self){
+		var fn = this;
+		return function(){
+			return fn.apply(self,arguments);
+		}
+	};
 	//简单选择器
 	function $(selector,rootNode){
 		rootNode = rootNode || document;
@@ -33,7 +40,7 @@ void function(window,document,undefined){
 				return rets;
 			}
 		}
-		push.apply(rets,rootNode.querySelectorAll(selector));
+		rootNode.querySelectorAll && push.apply(rets,rootNode.querySelectorAll(selector));
 		return rets;
 	}
 
@@ -66,15 +73,28 @@ void function(window,document,undefined){
 		return !!(o && o.addEventListener && o.nodeType === 1);
 	}
 	function addEvent(el,type,fn){
-		el.addEventListener(type,fn,false);
+		if(el.addEventListener){
+			el.addEventListener(type,fn,false);
+		}else if(el.attachEvent){
+			el['__on'+type+'__'] = fn; 
+			el.attachEvent('on'+type,el['__on'+type+'__']);
+		}
 	}
 
 	function removeEvent(el,type,fn){
-		el.removeEventListener(type,fn);
+		if(el.removeEventListener){
+			el.removeEventListener(type,fn);
+		}else if(el.detachEvent){
+			el.detachEvent('on'+type,fn);
+		}
 	}
 
 	function trigger(el,event){
-		el.dispatchEvent(event);
+		if(el.dispatchEvent){
+			el.dispatchEvent(event);
+		}else if(el.fireEvent){
+			el.fireEvent(event);
+		}
 	}
 
 	var C = function(div){
@@ -173,7 +193,7 @@ void function(window,document,undefined){
 	}
 	//判断元素是不是属于或是等于另一元素
 	function insideElement(el,box){
-		return !!(box.compareDocumentPosition(el) & 16);
+		return el === box || box.compareDocumentPosition && !!(box.compareDocumentPosition(el) & 16) || box.contains && box.contains(el);
 	}
 
 	var requestAnimationFrame = window.requestAnimationFrame
@@ -304,20 +324,25 @@ void function(window,document,undefined){
 		//兼容ie的mouse事件
 		this.isLeftBtnDown = false;
 		this._ieOnTouchStart = function(e){
-			if(e.button === 0){
-				this.isLeftBtnDown = true;
-				this.onTouchStart(e);
+			e = window.event || e;
+			if(insideElement(e.target || e.srcElement,this.el)){
+				if(e.button === 0 || isIE && e.button === 1){
+					this.isLeftBtnDown = true;
+					this.onTouchStart(e);
+				}
 			}
 		}.bind(this);
 
 		this._ieOnTouchMove = function(e){
-			if( e.button === 0 && this.isLeftBtnDown){
+			e = window.event || e;
+			if( (e.button === 0 || isIE && e.button === 1) && this.isLeftBtnDown){
 				this.onTouchMove(e);
 			}
 		}.bind(this);
 
 		this._ieOnTouchEnd = function(e){
-			if(e.button === 0 && this.isLeftBtnDown){
+			e = window.event || e;
+			if((e.button === 0 || isIE && e.button === 1) && this.isLeftBtnDown){
 				this.onTouchEnd(e);
 				this.isLeftBtnDown = false;
 			}
@@ -380,9 +405,9 @@ void function(window,document,undefined){
 				addEvent(this.el,'touchmove',this._onTouchMove);
 				addEvent(this.el,'touchend',this._onTouchEnd);
 			}else{
-				addEvent(this.el,'mousedown',this._ieOnTouchStart);
-				addEvent(this.el,'mousemove',this._ieOnTouchMove);
-				addEvent(this.el,'mouseup',this._ieOnTouchEnd);
+				addEvent(document.documentElement,'mousedown',this._ieOnTouchStart);
+				addEvent(document.documentElement,'mousemove',this._ieOnTouchMove);
+				addEvent(document.documentElement,'mouseup',this._ieOnTouchEnd);
 			}
 			
 		},
@@ -401,10 +426,9 @@ void function(window,document,undefined){
 		getTouchPos:function(e){
 			var touch = this.getPointerPos(e);
 			if(!touch) return {x:0,y:0};
-			var pos = offset(this.el);
 			return {
-				x:touch.pageX - pos.left,
-				y:touch.pageY - pos.top
+				x:touch.screenX,
+				y:touch.screenY
 			};
 		},
 		setStartPos:function(e){
@@ -427,8 +451,8 @@ void function(window,document,undefined){
 		getPageTouchPos:function(e){
 			var touch = this.getPointerPos(e);
 			return {
-				x:touch.pageX,
-				y:touch.pageY
+				x:touch.screenX,
+				y:touch.screenY
 			};
 		},
 		onTouchStart:function(e){
@@ -549,7 +573,7 @@ void function(window,document,undefined){
 			}
 		},
 		createScrollBar:function(){
-			var defaultStyle = 'position:absolute;height:5px;width:5px;background:#000;opacity:0.5;border-radius:2px;';
+			var defaultStyle = 'position:absolute;height:5px;width:5px;background:#000;opacity:0.5;border-radius:2px; zoom:1;overflow:hidden;';
 			this.container = C('div',{
 				'class':CLASS_PREFIX + 'container',
 				'style':'height:100%;width:100%;overflow:hidden'
