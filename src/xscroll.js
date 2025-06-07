@@ -34,10 +34,10 @@ void function(window,document,undefined){
 				r = rootNode.getElementsByClassName(matches[2]);
 				r && r.length && push.apply(rets,r);
 				return rets;
-			}else if(matches[3] && rootNode.getElementsByTagName){
-				r = rootNode.getElementsByClassName(matches[3]);
-				r && r.length && push.apply(rets,r);
-				return rets;
+                        }else if(matches[3] && rootNode.getElementsByTagName){
+                                r = rootNode.getElementsByTagName(matches[3]);
+                                r && r.length && push.apply(rets,r);
+                                return rets;
 			}
 		}
 		rootNode.querySelectorAll && push.apply(rets,rootNode.querySelectorAll(selector));
@@ -371,9 +371,9 @@ void function(window,document,undefined){
 					this.el = ops.el;
 				}
 			}
-			//设置回调
-			if(ops.onSrcollStart && typeof ops.onSrcollStart === 'function'){
-				this.onScrollStart = ops.onSrcollStart;
+                        //设置回调
+                        if(ops.onScrollStart && typeof ops.onScrollStart === 'function'){
+                                this.onScrollStart = ops.onScrollStart;
 			}
 			if(ops.onScrollMove && typeof ops.onScrollMove === 'function'){
 				this.onScrollMove = ops.onScrollMove;
